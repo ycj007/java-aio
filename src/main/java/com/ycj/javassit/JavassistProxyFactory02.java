@@ -1,6 +1,7 @@
 package com.ycj.javassit;
 
 import javassist.util.proxy.MethodHandler;
+import javassist.util.proxy.Proxy;
 import javassist.util.proxy.ProxyFactory;
 
 import java.lang.reflect.Method;
@@ -27,7 +28,11 @@ public class JavassistProxyFactory02 {
          * 类似于JDK中的InvocationHandler接口。
          */
 
-        proxyFactory.setHandler(new MethodHandler() {
+        //proxyFactory.setHandler();
+
+
+        // 通过字节码技术动态创建子类实例
+        MethodHandler mi = new MethodHandler() {
             /*
              * self为由Javassist动态生成的代理类实例，
              *  thismethod为 当前要调用的方法
@@ -51,12 +56,15 @@ public class JavassistProxyFactory02 {
                 System.out.println("提交事务 -------");
                 return result;
             }
-        });
-
-
-        // 通过字节码技术动态创建子类实例
-        return (T)proxyFactory.createClass()
+        };
+         T t =  (T)proxyFactory.createClass()
                            .newInstance();
+        ((Proxy)t).setHandler(mi);
+
+        return t;
     }
+
+
+
 
 }
